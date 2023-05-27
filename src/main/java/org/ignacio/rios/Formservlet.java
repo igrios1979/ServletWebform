@@ -8,7 +8,9 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @WebServlet("/registro")
 public class Formservlet extends HttpServlet {
@@ -23,9 +25,38 @@ public class Formservlet extends HttpServlet {
         String pais = req.getParameter("pais");
         String[] lenguajes = req.getParameterValues("lenguajes");
         String[] roles = req.getParameterValues("roles");
+
         String idioma = req.getParameter("idioma");
         String habilitar = req.getParameter("habilitar");
         String secreto = req.getParameter("secreto");
+
+        List<String> errores = new ArrayList<>();
+
+        if (username == null || username.isEmpty()) {
+            errores.add("username requerido");
+        }
+        if (password == null || password.isEmpty()) {
+            errores.add("password  requerido");
+        }
+        if (email == null || !email.contains("@")) {
+            errores.add("email requerido y debe tener formato requerido");
+        }
+        if (pais == null || pais.isEmpty()) {
+            errores.add("pais  requerido");
+        }
+
+        if (lenguajes == null || lenguajes.length == 0) {
+            errores.add("debe seleccionar al menos uno");
+        }
+
+        if (roles == null || roles.length == 0) {
+            errores.add("un rol debe ser seleccionado ");
+        }
+
+        if (idioma == null) {
+            errores.add("selecciona un idioma");
+        }
+
 
         try (PrintWriter out = resp.getWriter()) {
             out.println("<!DOCTYPE html>");
@@ -61,39 +92,47 @@ public class Formservlet extends HttpServlet {
             out.println("<h1>Resultado Form</h1>");
             out.println("<ul>");
 
-            out.println("<li>");
-            out.println("<h1>Nombre: " + username + "</h1>");
-            out.println("</li>");
+            if (errores.isEmpty()) {
 
-            out.println("<li>");
-            out.println("<h1>Password: " + password + "</h1>");
-            out.println("</li>");
 
-            out.println("<li>");
-            out.println("<h1>Email: " + email + "</h1>");
-            out.println("</li>");
+                out.println("<li>");
+                out.println("<h1>Nombre: " + username + "</h1>");
+                out.println("</li>");
 
-            out.println("<li>");
-            out.println("<h1>País: " + pais + "</h1>");
-            out.println("</li>");
+                out.println("<li>");
+                out.println("<h1>Password: " + password + "</h1>");
+                out.println("</li>");
 
-            out.println("<li><h1>Lenguajes:</h1></li>");
-            out.println("<ul>");
-            Arrays.asList(lenguajes).forEach(len -> {
-                out.println("<li><h1>" + len + "</h1></li>");
-            });
-            out.println("</ul>");
+                out.println("<li>");
+                out.println("<h1>Email: " + email + "</h1>");
+                out.println("</li>");
 
-            out.println("<li><h1>Roles:</h1></li>");
-            out.println("<ul>");
-            Arrays.asList(roles).forEach(rol -> {
-                out.println("<li><h1>" + rol + "</h1></li>");
-            });
-            out.println("</ul></li>");
-            out.println("<li><h1> idioma : " + idioma + "</h1></li>");
-            out.println("<li><h1> habilitado:  " + habilitar + "</h1></li>");
-            out.println("<li><h1> secreto : " + secreto + "</h1></li>");
+                out.println("<li>");
+                out.println("<h1>País: " + pais + "</h1>");
+                out.println("</li>");
 
+                out.println("<li><h1>Lenguajes:</h1></li>");
+                out.println("<ul>");
+                Arrays.asList(lenguajes).forEach(len -> {
+                    out.println("<li><h1>" + len + "</h1></li>");
+                });
+                out.println("</ul>");
+
+                out.println("<li><h1>Roles:</h1></li>");
+                out.println("<ul>");
+                Arrays.asList(roles).forEach(rol -> {
+                    out.println("<li><h1>" + rol + "</h1></li>");
+                });
+                out.println("</ul></li>");
+                out.println("<li><h1> idioma : " + idioma + "</h1></li>");
+                out.println("<li><h1> habilitado:  " + habilitar + "</h1></li>");
+                out.println("<li><h1> secreto : " + secreto + "</h1></li>");
+            }else {
+                errores.forEach(a->{
+                    out.println("<li>" + a + "</li>");
+                });
+                 out.println("<p><a href=\"/webapp-form/index.html\">Volver</a>");
+            }
             out.println("</ul>");
             out.println("</body>");
             out.println("</html>");
